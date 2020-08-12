@@ -1,6 +1,6 @@
-# ido_english
+# edelivery
 
-A new Flutter project.
+A new Flutter project by Delivery Ecosystem.
 
 ## Getting Started
 
