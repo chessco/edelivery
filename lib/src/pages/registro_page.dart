@@ -219,7 +219,7 @@ class RegistroPage extends StatelessWidget {
               //Icon( Icons.person_pin_circle, color: Colors.white, size: 100.0 ),
                Image.asset('assets/images/idologo.png'),
               SizedBox( height: 10.0, width: double.infinity ),
-              Text('iDo English', style: TextStyle( color: Colors.white, fontSize: 25.0 ))
+              Text('edelivery', style: TextStyle( color: Colors.white, fontSize: 25.0 ))
             ],
           ),
         )
