@@ -1,9 +1,10 @@
+import 'package:edelivery/src/pages/home_page2.dart';
 import 'package:edelivery/src/pages/login_page.dart';
+import 'package:edelivery/src/pages/register_page.dart';
 import 'package:flutter/material.dart';
 
 import 'package:edelivery/src/bloc/provider.dart';
 
-import 'package:edelivery/src/pages/home_page.dart';
 import 'package:edelivery/src/pages/producto_page.dart';
 import 'package:edelivery/src/pages/registro_page.dart';
 import 'package:edelivery/src/preferencias_usuario/preferencias_usuario.dart';
@@ -32,11 +33,14 @@ class MyApp extends StatelessWidget {
         routes: {
           'login': (BuildContext context) => LoginPage(),
           'registro': (BuildContext context) => RegistroPage(),
-          'home': (BuildContext context) => HomePage(),
+          'register': (BuildContext context) => RegisterPage(),
+          'home': (BuildContext context) => HomePage2(),
           'producto': (BuildContext context) => ProductoPage(),
         },
         theme: ThemeData(
           primaryColor: Color(0xFF17191C),
+          primarySwatch: Colors.blue,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
           brightness: Brightness.light,
           textTheme: TextTheme(
             title: TextStyle(

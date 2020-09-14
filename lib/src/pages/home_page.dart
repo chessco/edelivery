@@ -1,97 +1,88 @@
 import 'package:flutter/material.dart';
-import 'package:edelivery/src/bloc/provider.dart';
-import 'package:edelivery/src/models/producto_model.dart';
+import 'package:after_layout/after_layout.dart';
+import 'package:edelivery/src/api/my_api.dart';
+import 'package:edelivery/src/models/user.dart';
+import 'package:edelivery/src/utils/auth.dart';
+import 'package:edelivery/src/utils/dialogs.dart';
+import 'package:edelivery/src/utils/extras.dart';
+import 'package:edelivery/src/widgets/avatar_button.dart';
+import 'package:image_picker/image_picker.dart';
 
-import 'package:edelivery/src/providers/productos_provider.dart';
+class HomePage extends StatefulWidget {
+  static const routeName = 'home';
+  @override
+  _HomePageState createState() => _HomePageState();
+}
 
-class HomePage extends StatelessWidget {
-  
-  final productosProvider = new ProductosProvider();
-  
+class _HomePageState extends State<HomePage> with AfterLayoutMixin {
+  User user;
+
+  @override
+  void afterFirstLayout(BuildContext context) {
+    this._init();
+  }
+
+  _init() async {
+    this.user = await MyAPI.instance.getUserInfo();
+    setState(() {});
+  }
+
+  _pickImage() async {
+    final PickedFile pickedFile = await Extras.pickImage(false);
+    if (pickedFile != null) {
+      print("path ${pickedFile.path}");
+      final bytes = await pickedFile.readAsBytes();
+      ProgressDialog progressDialog = ProgressDialog(context);
+      progressDialog.show();
+      final String result = "null";
+//      final String result = await MyAPI.instance.updateAvatar(
+//        bytes,
+//        pickedFile.path,
+//      );
+
+      progressDialog.dismiss();
+
+      if (result != null) {
+        this.user = this.user.setAvatar(result);
+        setState(() {});
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-
-    final bloc = Provider.of(context);
-    
-
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Home')
-      ),
-      body: _crearListado(),
-      floatingActionButton: _crearBoton( context ),
-    );
-  }
-
-
-  Widget _crearListado() {
-
-    return FutureBuilder(
-      future: productosProvider.cargarProductos(),
-      builder: (BuildContext context, AsyncSnapshot<List<ProductoModel>> snapshot) {
-        if ( snapshot.hasData ) {
-
-          final productos = snapshot.data;
-
-          return ListView.builder(
-            itemCount: productos.length,
-            itemBuilder: (context, i) => _crearItem(context, productos[i] ),
-          );
-
-        } else {
-          return Center( child: CircularProgressIndicator());
-        }
-      },
-    );
-  }
-
-  Widget _crearItem(BuildContext context, ProductoModel producto ) {
-
-    return Dismissible(
-      key: UniqueKey(),
-      background: Container(
-        color: Colors.red,
-      ),
-      onDismissed: ( direccion ){
-        productosProvider.borrarProducto(producto.id);
-      },
-      child: Card(
-        child: Column(
-          children: <Widget>[
-
-            ( producto.fotoUrl == null ) 
-              ? Image(image: AssetImage('assets/images/no-image.png'))
-              : FadeInImage(
-                image: NetworkImage( producto.fotoUrl ),
-                placeholder: AssetImage('assets/images/jar-loading.gif'),
-                height: 300.0,
-                width: double.infinity,
-                fit: BoxFit.cover,
+      body: SafeArea(
+        child: Container(
+          width: double.infinity,
+          height: double.infinity,
+          child: Column(
+            children: <Widget>[
+              this.user == null
+                  ? Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: CircularProgressIndicator(),
+                    )
+                  : Column(
+                      children: <Widget>[
+                        AvatarButton(
+                          imageSize: 100,
+                          url: this.user.avatar,
+                          onPressed: this._pickImage,
+                        ),
+                        Text(this.user.username),
+                        Text(this.user.email),
+                        Text(this.user.createdAt.toString()),
+                      ],
+                    ),
+              FlatButton(
+                child: Text("Log Out"),
+                onPressed: () => Auth.instance.logOut(context),
               ),
-            
-            ListTile(
-              title: Text('${ producto.titulo } - ${ producto.valor }'),
-              subtitle: Text( producto.id ),
-              onTap: () => Navigator.pushNamed(context, 'producto', arguments: producto ),
-            ),
-
-          ],
+            ],
+          ),
         ),
-      )
-    );
-
-
-    
-
-  }
-
-
-  _crearBoton(BuildContext context) {
-    return FloatingActionButton(
-      child: Icon( Icons.add ),
-      backgroundColor: Colors.deepPurple,
-      onPressed: ()=> Navigator.pushNamed(context, 'producto'),
+      ),
     );
   }
-
 }

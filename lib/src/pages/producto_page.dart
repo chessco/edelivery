@@ -222,7 +222,7 @@ class _ProductoPageState extends State<ProductoPage> {
   _procesarImagen( ImageSource origen ) async {
 
     foto = await ImagePicker.pickImage(
-      source: origen
+      source: origen      
     );
 
     if ( foto != null ) {
